@@ -125,9 +125,10 @@ async def expand_trig(ctx, *, expression: str):
         logging.error(f'Error expanding trigonometric expression: {e}')
 
 @bot.command(name='plot')
-async def plot(ctx, *, function: str):
+async def plot(ctx, *, function: str, x_range: str = '-10,10'):
     try:
-        x = np.linspace(-10, 10, 400)
+        x_min, x_max = map(float, x_range.split(','))
+        x = np.linspace(x_min, x_max, 400)
         expr = sp.sympify(function)
         f = sp.lambdify(sp.Symbol('x'), expr, 'numpy')
         y = f(x)
@@ -178,5 +179,61 @@ async def std_dev(ctx, *values: float):
     except Exception as e:
         await ctx.send(f'Error: {e}')
         logging.error(f'Error calculating standard deviation: {e}')
+
+@bot.command(name='complex')
+async def complex_operations(ctx, *, expression: str):
+    try:
+        expr = sp.sympify(expression)
+        if expr.has(sp.I):
+            result = sp.N(expr)
+            await ctx.send(f'The result of the complex expression is: {result}')
+        else:
+            await ctx.send('The expression does not contain complex numbers.')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error handling complex numbers: {e}')
+
+@bot.command(name='matrix')
+async def matrix(ctx, *, *args: str):
+    try:
+        matrices = [sp.Matrix(sp.sympify(arg)) for arg in args]
+        if len(matrices) == 2:
+            result = matrices[0] * matrices[1]
+            await ctx.send(f'The matrix product is: \n{result}')
+        else:
+            await ctx.send('Please provide exactly two matrices.')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error performing matrix operations: {e}')
+
+@bot.command(name='eigenvalues')
+async def eigenvalues(ctx, *, matrix: str):
+    try:
+        mat = sp.Matrix(sp.sympify(matrix))
+        eigvals = mat.eigenvals()
+        await ctx.send(f'The eigenvalues are: {eigvals}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating eigenvalues: {e}')
+
+@bot.command(name='invert_matrix')
+async def invert_matrix(ctx, *, matrix: str):
+    try:
+        mat = sp.Matrix(sp.sympify(matrix))
+        inverse = mat.inv_mod(5)
+        await ctx.send(f'The inverse of the matrix is: \n{inverse}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error inverting matrix: {e}')
+
+@bot.command(name='determinant')
+async def determinant(ctx, *, matrix: str):
+    try:
+        mat = sp.Matrix(sp.sympify(matrix))
+        det = mat.det()
+        await ctx.send(f'The determinant of the matrix is: {det}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating determinant: {e}')
 
 bot.run('YOUR_BOT_TOKEN')
