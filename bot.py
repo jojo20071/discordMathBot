@@ -1,7 +1,10 @@
 import discord
 from discord.ext import commands
 import sympy as sp
+import matplotlib.pyplot as plt
+import numpy as np
 import logging
+from scipy import stats
 
 logging.basicConfig(level=logging.INFO)
 
@@ -120,5 +123,60 @@ async def expand_trig(ctx, *, expression: str):
     except Exception as e:
         await ctx.send(f'Error: {e}')
         logging.error(f'Error expanding trigonometric expression: {e}')
+
+@bot.command(name='plot')
+async def plot(ctx, *, function: str):
+    try:
+        x = np.linspace(-10, 10, 400)
+        expr = sp.sympify(function)
+        f = sp.lambdify(sp.Symbol('x'), expr, 'numpy')
+        y = f(x)
+        plt.figure()
+        plt.plot(x, y)
+        plt.title(f'Plot of {function}')
+        plt.xlabel('x')
+        plt.ylabel('f(x)')
+        plt.grid(True)
+        plt.savefig('plot.png')
+        await ctx.send(file=discord.File('plot.png'))
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error plotting function: {e}')
+
+@bot.command(name='mean')
+async def mean(ctx, *values: float):
+    try:
+        mean_value = np.mean(values)
+        await ctx.send(f'The mean is: {mean_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating mean: {e}')
+
+@bot.command(name='median')
+async def median(ctx, *values: float):
+    try:
+        median_value = np.median(values)
+        await ctx.send(f'The median is: {median_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating median: {e}')
+
+@bot.command(name='mode')
+async def mode(ctx, *values: float):
+    try:
+        mode_value = stats.mode(values)
+        await ctx.send(f'The mode is: {mode_value.mode[0]}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating mode: {e}')
+
+@bot.command(name='std_dev')
+async def std_dev(ctx, *values: float):
+    try:
+        std_dev_value = np.std(values)
+        await ctx.send(f'The standard deviation is: {std_dev_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating standard deviation: {e}')
 
 bot.run('YOUR_BOT_TOKEN')
