@@ -236,4 +236,36 @@ async def determinant(ctx, *, matrix: str):
         await ctx.send(f'Error: {e}')
         logging.error(f'Error calculating determinant: {e}')
 
+@bot.command(name='polynomial')
+async def polynomial(ctx, *, expression: str, point: float):
+    try:
+        x = sp.Symbol('x')
+        expr = sp.sympify(expression)
+        poly = sp.Poly(expr, x)
+        evaluated = poly.eval(point)
+        await ctx.send(f'The value of the polynomial at x={point} is: {evaluated}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error evaluating polynomial: {e}')
+
+@bot.command(name='variance')
+async def variance(ctx, *values: float):
+    try:
+        variance_value = np.var(values)
+        await ctx.send(f'The variance is: {variance_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating variance: {e}')
+
+@bot.command(name='covariance')
+async def covariance(ctx, *values: float):
+    try:
+        values = np.array(values)
+        mean = np.mean(values)
+        covariance_matrix = np.cov(values - mean, rowvar=False)
+        await ctx.send(f'The covariance is: {covariance_matrix}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating covariance: {e}')
+
 bot.run('YOUR_BOT_TOKEN')
