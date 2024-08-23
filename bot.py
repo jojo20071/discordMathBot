@@ -194,7 +194,7 @@ async def complex_operations(ctx, *, expression: str):
         logging.error(f'Error handling complex numbers: {e}')
 
 @bot.command(name='matrix')
-async def matrix(ctx, *, *args: str):
+async def matrix(ctx, *, args: str):
     try:
         matrices = [sp.Matrix(sp.sympify(arg)) for arg in args]
         if len(matrices) == 2:
@@ -267,5 +267,92 @@ async def covariance(ctx, *values: float):
     except Exception as e:
         await ctx.send(f'Error: {e}')
         logging.error(f'Error calculating covariance: {e}')
+
+@bot.command(name='fourier_transform')
+async def fourier_transform(ctx, *, expression: str):
+    try:
+        t = sp.Symbol('t')
+        expr = sp.sympify(expression)
+        fourier_expr = sp.fourier_transform(expr, t, sp.Symbol('w'))
+        await ctx.send(f'Fourier Transform: {fourier_expr}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating Fourier transform: {e}')
+
+@bot.command(name='inverse_fourier')
+async def inverse_fourier(ctx, *, expression: str):
+    try:
+        w = sp.Symbol('w')
+        expr = sp.sympify(expression)
+        inv_fourier_expr = sp.inverse_fourier_transform(expr, w, sp.Symbol('t'))
+        await ctx.send(f'Inverse Fourier Transform: {inv_fourier_expr}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating inverse Fourier transform: {e}')
+
+@bot.command(name='convolution')
+async def convolution(ctx, *, signals: str):
+    try:
+        signals = signals.split(';')
+        if len(signals) != 2:
+            await ctx.send('Please provide exactly two signals separated by a semicolon (;).')
+            return
+        signal1 = np.array(list(map(float, signals[0].split(','))))
+        signal2 = np.array(list(map(float, signals[1].split(','))))
+        conv_result = np.convolve(signal1, signal2)
+        await ctx.send(f'Convolution result: {conv_result}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating convolution: {e}')
+
+@bot.command(name='fft')
+async def fft(ctx, *, signal: str):
+    try:
+        signal = np.array(list(map(float, signal.split(','))))
+        fft_result = np.fft.fft(signal)
+        await ctx.send(f'FFT result: {fft_result}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating FFT: {e}')
+
+@bot.command(name='ifft')
+async def ifft(ctx, *, signal: str):
+    try:
+        signal = np.array(list(map(float, signal.split(','))))
+        ifft_result = np.fft.ifft(signal)
+        await ctx.send(f'IFFT result: {ifft_result}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating IFFT: {e}')
+
+@bot.command(name='cross_correlation')
+async def cross_correlation(ctx, *, signals: str):
+    try:
+        signals = signals.split(';')
+        if len(signals) != 2:
+            await ctx.send('Please provide exactly two signals separated by a semicolon (;).')
+            return
+        signal1 = np.array(list(map(float, signals[0].split(','))))
+        signal2 = np.array(list(map(float, signals[1].split(','))))
+        cross_corr_result = np.correlate(signal1, signal2, mode='full')
+        await ctx.send(f'Cross-correlation result: {cross_corr_result}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating cross-correlation: {e}')
+
+@bot.command(name='deconvolution')
+async def deconvolution(ctx, *, signals: str):
+    try:
+        signals = signals.split(';')
+        if len(signals) != 2:
+            await ctx.send('Please provide exactly two signals separated by a semicolon (;).')
+            return
+        signal1 = np.array(list(map(float, signals[0].split(','))))
+        signal2 = np.array(list(map(float, signals[1].split(','))))
+        deconv_result, remainder = np.polydiv(signal1, signal2)
+        await ctx.send(f'Deconvolution result: {deconv_result}, Remainder: {remainder}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating deconvolution: {e}')
 
 bot.run('YOUR_BOT_TOKEN')
