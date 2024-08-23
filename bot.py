@@ -407,6 +407,55 @@ async def correlation(ctx, *, data: str):
         await ctx.send(f'Error: {e}')
         logging.error(f'Error calculating correlation matrix: {e}')
 
+@bot.command(name='skewness')
+async def skewness(ctx, *values: float):
+    try:
+        skew_value = stats.skew(values)
+        await ctx.send(f'The skewness is: {skew_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating skewness: {e}')
 
+@bot.command(name='kurtosis')
+async def kurtosis(ctx, *values: float):
+    try:
+        kurt_value = stats.kurtosis(values)
+        await ctx.send(f'The kurtosis is: {kurt_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating kurtosis: {e}')
+
+@bot.command(name='percentile')
+async def percentile(ctx, percentile: float, *values: float):
+    try:
+        percentile_value = np.percentile(values, percentile)
+        await ctx.send(f'The {percentile}th percentile is: {percentile_value}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating percentile: {e}')
+
+@bot.command(name='zscore')
+async def zscore(ctx, *values: float):
+    try:
+        z_scores = stats.zscore(values)
+        await ctx.send(f'Z-scores: {z_scores}')
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error calculating Z-scores: {e}')
+
+@bot.command(name='histogram')
+async def histogram(ctx, bins: int, *values: float):
+    try:
+        plt.figure()
+        plt.hist(values, bins=bins)
+        plt.title('Histogram')
+        plt.xlabel('Value')
+        plt.ylabel('Frequency')
+        plt.grid(True)
+        plt.savefig('histogram.png')
+        await ctx.send(file=discord.File('histogram.png'))
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+        logging.error(f'Error creating histogram: {e}')
 
 bot.run('YOUR_BOT_TOKEN')
