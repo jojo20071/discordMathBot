@@ -1,0 +1,5 @@
+discord.py
+sympy
+numpy
+matplotlib
+scipy
