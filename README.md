@@ -1,5 +1,7 @@
 # Discord Math Bot
 
+Invite: https://discord.com/oauth2/authorize?client_id=1286298110351642636&permissions=8&integration_type=0&scope=bot
+
 This is a simple Discord bot that can solve mathematical equations and perform complex mathematical operations. It uses `sympy`, `numpy`, `scipy`, and `matplotlib` to provide a variety of math functions.
 
 ## Features
